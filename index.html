@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no">
+    <title>ئەنجامی پێشبڕکێ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-purple: #7a28cb;
+            --primary-blue: #00d2ff;
+            --gold: #FFD700;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #f0f4f8;
+            --transition-smooth: opacity 0.8s ease-in-out;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Noto Kufi Arabic', sans-serif; }
+
+        body {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%;
+            background-color: #0a0a0a;
+            color: var(--text-light);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .animated-bg {
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(122, 40, 203, 0.5), transparent 60%),
+                        radial-gradient(circle at 80% 20%, rgba(0, 210, 255, 0.4), transparent 50%);
+            animation: moveGradient 15s infinite alternate ease-in-out;
+            z-index: -1; filter: blur(60px);
+        }
+
+        @keyframes moveGradient {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(5%, 10%); }
+            100% { transform: translate(-5%, -5%); }
+        }
+
+        .screen {
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: opacity 0.5s ease;
+            padding: 15px;
+        }
+
+        .screen.active { opacity: 1; visibility: visible; }
+
+        .glass-card {
+            background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px 20px;
+            width: 92%; max-width: 500px; 
+            min-height: 400px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            position: relative;
+        }
+
+        h1 { font-size: 1.4rem; font-weight: 800; margin-bottom: 30px; line-height: 1.8; color: #fff; }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            border: none; border-radius: 12px; padding: 15px 30px; color: white;
+            font-size: 1.2rem; font-weight: 800; cursor: pointer; width: 80%; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
+        }
+        .btn:hover { box-shadow: 0 6px 25px rgba(0, 210, 255, 0.6); transform: translateY(-2px); }
+
+        /* ستايلی تایبەت بە ناوەکان و ئەنجامەکان */
+        .winners-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .winner-slide {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-smooth);
+            transform: scale(0.95);
+        }
+
+        .winner-slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        .winner-title {
+            font-size: 1.3rem;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .winner-name {
+            /* بەکارهێنانی clamp بۆ ئەوەی ناوەکە هەمیشە لە یەک دێڕدا جێی ببێتەوە بەبێ ئەوەی بێتە خوارەوە */
+            font-size: clamp(1.2rem, 5vw, 2.2rem);
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 15px;
+            white-space: nowrap; /* ڕێگری دەکات لە دابەشبوونی ناوەکە بۆ دوو دێڕ */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .winner-score {
+            font-size: 1.1rem;
+            color: #d1d5db;
+            line-height: 1.6;
+        }
+
+        /* ستايلی تایبەت بۆ براوەی یەکەم */
+        .first-place .winner-title { color: var(--gold); font-size: 1.6rem;}
+        .first-place .winner-name { 
+            background: linear-gradient(to right, #FFF, var(--gold)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+        }
+
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" preload="auto">
+        <source src="Aras Muhammed Salih Gorani Music Xosthrin Halparke(MP3_320K).mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="animated-bg"></div>
+
+    <div id="screen-welcome" class="screen active">
+        <div class="glass-card">
+            <h1>سوپاس بۆ هەموو ئەوانەی بەژداریان لەم پێشبڕکێیە کرد<br>فەرموون ئەمەش ئەنجامی پێشبڕکێیەکە</h1>
+            <button class="btn" id="startResultsBtn">ئەنجامەکان</button>
+        </div>
+    </div>
+
+    <div id="screen-results" class="screen">
+        <div class="glass-card">
+            <div class="winners-container" id="winnersContainer">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // زانیاری براوەکان بە ڕیزبەندی (لە سێیەمەوە بۆ یەکەم بۆ ئەوەی چێژی زیاتر بێت)
+        const winnersData = [
+            { 
+                title: "براوەی سێیەم 🥉", 
+                name: "فریشتە نایف عبدالله", 
+                score: "لە کۆی 20 خاڵ 8 خاڵی بەدەست هێنا",
+                cssClass: "third-place"
+            },
+            { 
+                title: "براوەی دووەم 🥈", 
+                name: "ئایندە کامەران مرشید", 
+                score: "لە کۆی 20 خاڵ 9 خاڵی بەدەست هێنا",
+                cssClass: "second-place"
+            },
+            { 
+                title: "براوەی یەکەم 🏆", 
+                name: "هاوژین علی بەکر", 
+                score: "لە کۆی 20 خاڵ 10 خاڵی بەدەست هێنا",
+                cssClass: "first-place"
+            }
+        ];
+
+        document.getElementById('startResultsBtn').addEventListener('click', () => {
+            // داگیرساندنی میوزیک
+            const music = document.getElementById('bgMusic');
+            music.volume = 0.8;
+            music.play().catch(e => console.log("کێشە لە لێدانی میوزیک:", e));
+
+            // گۆڕینی شاشەکان
+            document.getElementById('screen-welcome').classList.remove('active');
+            document.getElementById('screen-results').classList.add('active');
+
+            startWinnersAnimation();
+        });
+
+        function startWinnersAnimation() {
+            const container = document.getElementById('winnersContainer');
+            
+            // دروستکردنی دیڤی براوەکان
+            winnersData.forEach((winner, index) => {
+                const slide = document.createElement('div');
+                slide.className = `winner-slide ${winner.cssClass}`;
+                slide.id = `winner-${index}`;
+                slide.innerHTML = `
+                    <div class="winner-title">${winner.title}</div>
+                    <div class="winner-name">${winner.name}</div>
+                    <div class="winner-score">${winner.score}</div>
+                `;
+                container.appendChild(slide);
+            });
+
+            let currentIndex = 0;
+
+            function showNextWinner() {
+                // شاردنەوەی ئەوەی پێشوو (ئەگەر هەبێت) بە فەید
+                if (currentIndex > 0) {
+                    document.getElementById(`winner-${currentIndex - 1}`).classList.remove('active');
+                }
+
+                // پیشاندانی براوەی نوێ پاش کەمێک وەستان بۆ ئەوەی فەید ئاوتەکە تەواو بێت
+                if (currentIndex < winnersData.length) {
+                    setTimeout(() => {
+                        document.getElementById(`winner-${currentIndex}`).classList.add('active');
+                        
+                        // ئەگەر براوەی یەکەم نەبوو (واتا سێیەم یان دووەم بوو)، با پاش 4 چرکە بڕوات
+                        if (currentIndex < winnersData.length - 1) {
+                            setTimeout(() => {
+                                currentIndex++;
+                                showNextWinner();
+                            }, 4500); // هەر ناوێک بۆ ماوەی 4.5 چرکە دەمێنێتەوە
+                        } 
+                        // براوەی یەکەم لەسەر شاشەکە دەمێنێتەوە و ناڕوات
+                        
+                    }, 800); // 0.8 چرکە چاوەڕێ دەکات تا ئەوەی پێشوو بەتەواوی دیار نامێنێت
+                }
+            }
+
+            // دەستپێکردنی جووڵەکە پاش ئەوەی شاشەکە کرایەوە
+            setTimeout(showNextWinner, 500);
+        }
+    </script>
+</body>
+</html>
